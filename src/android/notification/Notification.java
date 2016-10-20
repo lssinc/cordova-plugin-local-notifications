@@ -77,7 +77,7 @@ public class Notification {
      * @param builder
      *      Pre-configured notification builder
      */
-    protected Notification (Context context, Options options,
+    public Notification (Context context, Options options,
                     NotificationCompat.Builder builder, Class<?> receiver) {
 
         this.context = context;
@@ -179,7 +179,7 @@ public class Notification {
             getAlarmMgr().setRepeating(AlarmManager.RTC_WAKEUP,
                     triggerTime, options.getRepeatInterval(), pi);
         } else {
-            getAlarmMgr().set(AlarmManager.RTC_WAKEUP, triggerTime, pi);
+            getAlarmMgr().setExact(AlarmManager.RTC_WAKEUP, triggerTime, pi);
         }
     }
 

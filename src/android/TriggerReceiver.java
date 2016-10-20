@@ -26,6 +26,10 @@ package de.appplant.cordova.plugin.localnotification;
 import de.appplant.cordova.plugin.notification.Builder;
 import de.appplant.cordova.plugin.notification.Notification;
 
+import org.json.JSONObject;
+import android.support.v4.app.NotificationCompat;
+import java.util.Date;
+
 /**
  * The alarm receiver is triggered when a scheduled alarm is fired. This class
  * reads the information in the intent and displays this information in the
@@ -43,12 +47,25 @@ public class TriggerReceiver extends de.appplant.cordova.plugin.notification.Tri
      * @param updated
      *      If an update has triggered or the original
      */
+
+    static final int EVERY_WEEK = 604800;
+
     @Override
     public void onTrigger (Notification notification, boolean updated) {
         super.onTrigger(notification, updated);
 
-        if (!updated) {
-            LocalNotification.fireEvent("trigger", notification);
+        try {
+            JSONObject jsonObject = notification.getOptions().getDict();
+            int lt = Integer.parseInt(jsonObject.get("at").toString()) + EVERY_WEEK;
+            jsonObject.put("at", lt);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(notification.getContext());
+            Notification newNotification = new Notification(notification.getContext(), notification.getOptions().parse(jsonObject), builder, TriggerReceiver.class);
+            newNotification.schedule();
+            if (!updated) {
+                LocalNotification.fireEvent("trigger", notification);
+            }
+        } catch (Exception e) {
+            //do nothing as of now.
         }
     }
 
